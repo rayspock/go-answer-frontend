@@ -5,7 +5,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 export interface EditMenuProps {
   id: string;
   onEditClick?: () => void | Promise<void>;
-  onRemoveClick?: () => void | Promise<void>;
+  onRemoveClick?: (key:string) => void | Promise<void>;
 }
 
 const EditMenu: React.FunctionComponent<EditMenuProps> = (props) => {
@@ -24,7 +24,7 @@ const EditMenu: React.FunctionComponent<EditMenuProps> = (props) => {
 
   const handleRemoveClick = () => {
     if (props.onRemoveClick) {
-      props.onRemoveClick();
+      props.onRemoveClick(props.id);
     }
     setAnchorEl(null);
   };

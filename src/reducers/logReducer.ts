@@ -1,4 +1,4 @@
-import { SET_ERROR, HIDE_LOG, API_ERROR, SET_INFO } from '../constants/action-types';
+import { SET_ERROR, HIDE_LOG, API_ERROR, SET_INFO } from './../constants/action-types';
 import { LogActionTypes } from '../actions/types';
 import { LogState } from './types';
 import { LogLevel } from '../constants/enum';

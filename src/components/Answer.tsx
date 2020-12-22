@@ -9,14 +9,17 @@ import {
   FixedTopBar,
   FixedMiddleBodyWithVerticalScroll,
   FixedActionBody,
-  TopBarBackButton
+  TopBarBackButton,
+  FixedBottomProminentButton,
 } from "../layout-components";
 import { Answer } from "../reducers/types";
 import { AppState } from "../reducers";
-import { getAnswers } from "../actions";
+import { createAnswer, updateAnswer, deleteAnswer, getAnswers } from "../actions";
 import Card from "./List/Card";
 import EmptyState from "./List/EmptyState";
 import { EditMenuProps } from "./List/EditMenu";
+import { Switch, Route } from "react-router-dom";
+import AnswerDetail from "./Form/AnswerDetail";
 
 interface ConnectedAnswerState {
   title: string;
@@ -25,6 +28,9 @@ interface ConnectedAnswerState {
 
 interface ConnectedAnswerProps extends RouteComponentProps<{}> {
   getAnswers: (key: string) => void | Promise<void>,
+  createAnswer: (answer: Answer) => void | Promise<void>,
+  updateAnswer: (answer: Answer) => void | Promise<void>,
+  deleteAnswer: (key: string) => void | Promise<void>,
   answers: Array<Answer>
 }
 
@@ -38,6 +44,9 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     getAnswers: (key?: string) => { dispatch(getAnswers(key)) },
+    createAnswer: (answer: Answer) => { dispatch(createAnswer(answer)) },
+    updateAnswer: (answer: Answer) => { dispatch(updateAnswer(answer)) },
+    deleteAnswer: (key: string) => { dispatch(deleteAnswer(key)) }
   }
 }
 
@@ -51,6 +60,10 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
     };
     this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
     this.handleSearchClick = this.handleSearchClick.bind(this);
+    this.handleAddClick = this.handleAddClick.bind(this);
+    this.handleCreateAnswer = this.handleCreateAnswer.bind(this);
+    this.handleRemoveAnswer = this.handleRemoveAnswer.bind(this);
+    this.handleUpdateAnswer = this.handleUpdateAnswer.bind(this);
   }
 
   componentDidMount() {
@@ -69,12 +82,32 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
     this.props.getAnswers(search)
   }
 
+  handleAddClick() {
+    const { history, match } = this.props
+    history.push(`${match.path}/new`)
+  }
+
+  handleCreateAnswer(answer: Answer) {
+    const { history, match, createAnswer } = this.props;
+    createAnswer(answer);
+    history.replace(match.path);
+  }
+
+  handleRemoveAnswer(key: string) {
+    const { deleteAnswer } = this.props;
+    deleteAnswer(key);
+  }
+
+  handleUpdateAnswer() {
+
+  }
+
   render() {
     const { title } = this.state
-    const { answers } = this.props
+    const { answers, match } = this.props
     let answerList;
 
-    if (answers.length > 0) {
+    if (answers && answers.length > 0) {
       answerList = <Grid container spacing={1}>
         {answers.map((item, i) => {
           const { key, value } = item
@@ -82,6 +115,10 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
           const detail = `Value: ${value}`
           const menuButton: EditMenuProps = {
             id: key,
+            onRemoveClick: this.handleRemoveAnswer,
+            onEditClick: () => {
+
+            }
           }
           return (
             <Grid key={i} item xs={12} sm={6} lg={4}>
@@ -112,29 +149,43 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
           title={title}
           leftButton={topBarLeftButton}
         />
-        <FixedActionBody top={140}>
-          <Box style={{ height: '100%' }} display="flex" alignItems="center" flexDirection="row">
-            <Box flexGrow={1}>
-              <FormControl fullWidth>
-                <TextField
-                  id="outlined-search"
-                  label="Answer key"
-                  type="search"
-                  variant="outlined"
-                  onChange={this.handleSearchTextChange}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="end">
-                      <IconButton onClick={this.handleSearchClick}><SearchIcon /></IconButton>
-                    </InputAdornment>,
-                  }}
-                />
-              </FormControl>
-            </Box>
-          </Box>
-        </FixedActionBody>
-        <FixedMiddleBodyWithVerticalScroll top={210}>
-          {answerList}
-        </FixedMiddleBodyWithVerticalScroll>
+        <Switch>
+          <Route path={`${match.path}/:answerKey/edit`}>
+            <h3>Edit answer</h3>
+          </Route>
+          <Route path={`${match.path}/new`}>
+            <AnswerDetail title="save" onBottomButtonClick={this.handleCreateAnswer} />
+          </Route>
+          <Route exact path={match.path}>
+            <FixedActionBody top={140}>
+              <Box style={{ height: '100%' }} display="flex" alignItems="center" flexDirection="row">
+                <Box flexGrow={1}>
+                  <FormControl fullWidth>
+                    <TextField
+                      id="outlined-search"
+                      label="Answer key"
+                      type="search"
+                      variant="outlined"
+                      onChange={this.handleSearchTextChange}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">
+                          <IconButton onClick={this.handleSearchClick}><SearchIcon /></IconButton>
+                        </InputAdornment>,
+                      }}
+                    />
+                  </FormControl>
+                </Box>
+              </Box>
+            </FixedActionBody>
+            <FixedMiddleBodyWithVerticalScroll top={210}>
+              {answerList}
+            </FixedMiddleBodyWithVerticalScroll>
+            <FixedBottomProminentButton
+              title="add"
+              onClick={this.handleAddClick}
+            />
+          </Route>
+        </Switch>
       </PageContainer>
     )
   }

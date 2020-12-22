@@ -1,5 +1,5 @@
 import { HistoryState } from './types';
-import { HISTORY_LOAD } from "../constants/action-types";
+import { HISTORY_LOAD } from "./../constants/action-types";
 import { HistoryActionTypes } from "../actions/types";
 
 const initialState = {

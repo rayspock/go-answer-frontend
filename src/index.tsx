@@ -18,7 +18,7 @@ ReactDOM.render(
       <Router history={history}>
         <Switch>
           <Route path="/" exact component={Home} />
-          <Route path="/answer" exact component={Answer} />
+          <Route path="/answer" component={Answer} />
           <Route path="/history" exact component={History} />
         </Switch>
       </Router>

@@ -1,6 +1,7 @@
 import {
   AppBar,
   Box,
+  Button,
   IconButton,
   makeStyles,
   SvgIcon,
@@ -190,3 +191,40 @@ export const ButtonAppBar: React.FunctionComponent<{}> = () => {
     </div>
   );
 }
+
+export interface BottomButtonProps {
+  onClick: () => void | Promise<void>;
+  title: string;
+}
+
+export const FixedBottomProminentButton: React.FunctionComponent<BottomButtonProps> = (
+  props
+) => {
+  return (
+    <Box
+      style={{
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingBottom: 15,
+        height: 50,
+        top: "auto",
+        right: 0,
+        bottom: 0,
+        left: 0,
+        position: "fixed"
+      }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ height: 50, width: "100%" }}
+        onClick={props.onClick}
+      >
+        {props.title}
+      </Button>
+    </Box>
+  );
+};

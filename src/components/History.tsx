@@ -69,7 +69,7 @@ class ConnectedHistory extends Component<ConnectedHistoryProps, ConnectedHistory
     const { histories } = this.props
     let historyList;
 
-    if (histories.length > 0) {
+    if (histories && histories.length > 0) {
       historyList = <Grid container spacing={1}>
         {histories.map((item, i) => {
           const { event, data } = item

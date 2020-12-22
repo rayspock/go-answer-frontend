@@ -1,8 +1,7 @@
 import { AnswerActionTypes } from './../actions/types';
-import { HISTORY_LOAD, ANSWER_LOAD } from './../constants/action-types';
+import { HISTORY_LOAD, ANSWER_LOAD, HISTORY_REQUEST } from './../constants/action-types';
 import { HistoryActionTypes } from "../actions/types";
 import { Dispatch } from "redux";
-import { HISTORY_REQUEST } from "../constants/action-types";
 import { StringUtil } from "../utils/stringUtil";
 import { setError, setInfo } from "../actions";
 
