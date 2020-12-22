@@ -7,6 +7,7 @@ This project is initialized using:
 - [Typescript](https://www.typescriptlang.org/)
 - [React](https://create-react-app.dev/)
 - [React Redux](https://react-redux.js.org/)
+- [React Router](https://reactrouter.com/)
 - [Redux Saga](https://redux-saga.js.org/)
 - [Material-UI](https://material-ui.com/)
 

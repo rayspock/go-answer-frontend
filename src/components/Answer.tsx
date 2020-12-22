@@ -64,6 +64,7 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
     this.handleCreateAnswer = this.handleCreateAnswer.bind(this);
     this.handleRemoveAnswer = this.handleRemoveAnswer.bind(this);
     this.handleUpdateAnswer = this.handleUpdateAnswer.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
   }
 
   componentDidMount() {
@@ -98,8 +99,17 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
     deleteAnswer(key);
   }
 
-  handleUpdateAnswer() {
+  handleUpdateAnswer(answer: Answer) {
+    const { updateAnswer } = this.props;
+    updateAnswer(answer);
+  }
 
+  handleEditClick(answer: Answer) {
+    const { history, match } = this.props;
+    const { key, value } = answer;
+    history.push(`${match.path}/${key}/edit`, {
+      answerValue: value
+    });
   }
 
   render() {
@@ -114,10 +124,11 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
           const title = `Key: ${key}`
           const detail = `Value: ${value}`
           const menuButton: EditMenuProps = {
-            id: key,
-            onRemoveClick: this.handleRemoveAnswer,
+            onRemoveClick: () => {
+              this.handleRemoveAnswer(key)
+            },
             onEditClick: () => {
-
+              this.handleEditClick(item)
             }
           }
           return (
@@ -151,10 +162,10 @@ class ConnectedAnswer extends Component<ConnectedAnswerProps, ConnectedAnswerSta
         />
         <Switch>
           <Route path={`${match.path}/:answerKey/edit`}>
-            <h3>Edit answer</h3>
+            <AnswerDetail isEditMode={true} title="update" onBottomButtonClick={this.handleUpdateAnswer} />
           </Route>
           <Route path={`${match.path}/new`}>
-            <AnswerDetail title="save" onBottomButtonClick={this.handleCreateAnswer} />
+            <AnswerDetail isEditMode={false} title="create" onBottomButtonClick={this.handleCreateAnswer} />
           </Route>
           <Route exact path={match.path}>
             <FixedActionBody top={140}>
