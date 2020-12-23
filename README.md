@@ -10,6 +10,7 @@ This project is initialized using:
 - [React Router](https://reactrouter.com/)
 - [Redux Saga](https://redux-saga.js.org/)
 - [Material-UI](https://material-ui.com/)
+- [FORMIK](https://formik.org/)
 
 ## Quick start
 

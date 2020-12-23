@@ -1,8 +1,9 @@
-import { FormControl, FormGroup, InputLabel, OutlinedInput } from "@material-ui/core";
+import { FormGroup, TextField } from "@material-ui/core";
 import React from "react";
-import { useState } from "react";
 import { FunctionComponent } from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { FixedBottomProminentButton, FixedMiddleBodyWithVerticalScroll } from "../../layout-components";
 import { Answer } from "../../reducers/types";
 
@@ -16,40 +17,60 @@ interface AnswerDetailProps extends RouteComponentProps<{ answerKey?: string }, 
 const AnswerDetail: FunctionComponent<AnswerDetailProps> = (props) => {
   const { title, onBottomButtonClick, location, match } = props
 
-  const [state, setState] = useState({
-    key: (match.params && match.params.answerKey) ? match.params.answerKey : "",
-    value: (location.state && location.state.answerValue) ? location.state.answerValue : "",
+  const formik = useFormik({
+    initialValues: {
+      key: (match.params && match.params.answerKey) ? match.params.answerKey : "",
+      value: (location.state && location.state.answerValue) ? location.state.answerValue : "",
+    },
+    validationSchema: Yup.object({
+      key: Yup.string()
+        .max(10, 'Must be 10 characters or less')
+        .required('Required'),
+      value: Yup.string()
+        .max(20, 'Must be 20 characters or less')
+        .required('Required'),
+    }),
+    onSubmit: values => {
+      onBottomButtonClick(values)
+    },
   });
-
-  const handleInputChange = (event: any) => {
-    const { name, value } = event.target;
-    setState(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleBottomButtonClick = () => {
-    onBottomButtonClick(state)
-  }
 
   return (
     <>
       <FixedMiddleBodyWithVerticalScroll top={140}>
-        <FormGroup>
-          <FormControl variant="outlined" margin="normal">
-            <InputLabel htmlFor="key">Key</InputLabel>
-            <OutlinedInput id="key" name="key" value={state.key} disabled={props.isEditMode} onChange={handleInputChange} label="Key" />
-          </FormControl>
-          <FormControl variant="outlined" margin="normal">
-            <InputLabel htmlFor="value">Name</InputLabel>
-            <OutlinedInput id="value" name="value" value={state.value} onChange={handleInputChange} label="Name" />
-          </FormControl>
-        </FormGroup>
+        <form>
+          <FormGroup>
+            <TextField
+              name="key"
+              label="Key"
+              required={true}
+              disabled={props.isEditMode}
+              error={!!formik.errors.value && !!formik.touched.value}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.key}
+              helperText={(formik.errors.key && formik.touched.key) && formik.errors.key}
+              variant="outlined"
+              margin="normal"
+            />
+            <TextField
+              name="value"
+              label="Value"
+              required={true}
+              error={!!formik.errors.value && !!formik.touched.value}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.value}
+              helperText={(formik.errors.value && formik.touched.value) && formik.errors.value}
+              variant="outlined"
+              margin="normal" 
+            />
+          </FormGroup>
+        </form>
       </FixedMiddleBodyWithVerticalScroll>
       <FixedBottomProminentButton
         title={title}
-        onClick={handleBottomButtonClick}
+        onClick={formik.handleSubmit}
       />
     </>
   )
