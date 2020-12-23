@@ -20,6 +20,10 @@ $ npm install
 
 # Spin up the server and visit http://localhost:4000 on browser
 $ npm start
+
+
+# Run test
+$ npm test
 ```
 
 ## Environment variables

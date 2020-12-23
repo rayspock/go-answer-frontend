@@ -32,7 +32,11 @@ function* fetchAnswer(action: AnswerActionTypes) {
     if (Helper.typeof(response) === "array") {
       yield put({ type: ANSWER_LOAD, payload: response });
     } else if (Helper.typeof(response) === "object") {
-      yield put({ type: ANSWER_LOAD, payload: [response] });
+      if ("code" in response) {
+        yield put({ type: SET_ERROR, error: new Error(response.message) });
+      } else {
+        yield put({ type: ANSWER_LOAD, payload: [response] });
+      }
     } else {
       yield put({ type: SET_ERROR, error: new Error(response.message) });
     }
@@ -111,15 +115,7 @@ function getData(path: string): Promise<Response> {
   return fetch(`${process.env.REACT_APP_API}/api${path}`, {
     method: 'GET',
   }).then(response => {
-    if (response.status !== 200) {
-      throw new Error(`[${response.status}] not found!`)
-    }
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      return response.json()
-    } else {
-      return response.text()
-    }
+    return responseHandler(response);
   });
 }
 
@@ -133,14 +129,26 @@ function postData(method: string, path: string, payload?: any): Promise<Response
     },
     body: body
   }).then(response => {
-    if (response.status !== 200) {
-      throw new Error(`[${response.status}] something went wrong!`)
-    }
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      return response.json()
-    } else {
-      return response.text()
-    }
+    return responseHandler(response);
   });
+}
+
+function responseHandler(response: Response): Promise<any> | Promise<string> {
+  if (response.status !== 200) {
+    const statusCode = response.status.toString();
+    if (isServerError(statusCode)) {
+      throw new Error(`[${response.status}] something went wrong!`);
+    }
+  }
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    return response.json()
+  } else {
+    return response.text()
+  }
+}
+
+function isServerError(statusCode: string): boolean {
+  const regex = /^5[0-9][0-9]$/g;
+  return regex.test(statusCode);
 }

@@ -1,21 +1,29 @@
 import { FormGroup, TextField } from "@material-ui/core";
 import React from "react";
 import { FunctionComponent } from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import {  useLocation, useRouteMatch } from "react-router-dom";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { FixedBottomProminentButton, FixedMiddleBodyWithVerticalScroll } from "../../layout-components";
 import { Answer } from "../../reducers/types";
 
+export interface AnswerParams {
+  answerKey?: string;
+}
 
-interface AnswerDetailProps extends RouteComponentProps<{ answerKey?: string }, any, { answerValue?: string }> {
+export interface AnswerLocationState {
+  answerValue?: string
+}
+export interface AnswerDetailProps{
   isEditMode: boolean;
   title: string;
   onBottomButtonClick: (answer: Answer) => void | Promise<void>;
 }
 
 const AnswerDetail: FunctionComponent<AnswerDetailProps> = (props) => {
-  const { title, onBottomButtonClick, location, match } = props
+  const { title, onBottomButtonClick } = props
+  const location = useLocation<AnswerLocationState>();
+  const match = useRouteMatch<AnswerParams>();
 
   const formik = useFormik({
     initialValues: {
@@ -38,9 +46,12 @@ const AnswerDetail: FunctionComponent<AnswerDetailProps> = (props) => {
   return (
     <>
       <FixedMiddleBodyWithVerticalScroll top={140}>
-        <form>
+        <form data-testid="answer-form">
           <FormGroup>
             <TextField
+              inputProps={{
+                "data-testid": "answer-input-key"
+              }}
               name="key"
               label="Key"
               required={true}
@@ -54,6 +65,9 @@ const AnswerDetail: FunctionComponent<AnswerDetailProps> = (props) => {
               margin="normal"
             />
             <TextField
+              inputProps={{
+                "data-testid": "answer-input-value"
+              }}
               name="value"
               label="Value"
               required={true}
@@ -75,4 +89,4 @@ const AnswerDetail: FunctionComponent<AnswerDetailProps> = (props) => {
     </>
   )
 }
-export default withRouter(AnswerDetail)
+export default AnswerDetail

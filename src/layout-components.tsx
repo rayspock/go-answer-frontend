@@ -218,6 +218,7 @@ export const FixedBottomProminentButton: React.FunctionComponent<BottomButtonPro
       alignItems="center"
     >
       <Button
+        data-testid="bottom-button-primary"
         variant="contained"
         color="primary"
         style={{ height: 50, width: "100%" }}
